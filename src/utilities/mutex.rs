@@ -45,7 +45,12 @@ unsafe impl Sync for RawMutex {}
 unsafe impl Send for RawMutex {}
 
 impl embedded_svc::utils::mutex::RawMutex for RawMutex {
-  #[cfg(feature = "nightly")] // Remove "nightly" condition once 1.64 is out
+  #[rustversion::before(1.64)]
+  #[cfg(feature = "nightly")]
+  #[allow(clippy::declare_interior_mutable_const)]
+  const INIT: Self = RawMutex::new();
+
+  #[rustversion::since(1.64)]
   #[allow(clippy::declare_interior_mutable_const)]
   const INIT: Self = RawMutex::new();
 
